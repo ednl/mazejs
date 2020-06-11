@@ -25,7 +25,7 @@ function setup()
 		for (var j = 0; j < cols; ++j)
 			grid.push(new Cell(i, j));
 
-	current = grid[0];
+	current = grid[floor(random(grid.length))];
 }
 
 function draw()
