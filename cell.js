@@ -1,13 +1,15 @@
-function Cell(r, c)
-{
-	this.row = r;
-	this.col = c;
-	this.walls = [ true, true, true, true ];
-	this.visited = false;
-	this.todo = 4;
+class Cell {
 
-	this.show = function()
-	{
+	constructor(r, c) {
+		this.row = r;
+		this.col = c;
+		this.walls = [true, true, true, true];
+		this.visited = false;
+		this.todo = 4;
+	}
+
+	show() {
+
 		var x1 = this.col * cellsize;
 		var y1 = this.row * cellsize;
 		var x2 = x1 + cellsize - 1;
@@ -19,13 +21,13 @@ function Cell(r, c)
 			stroke(153, 153, 255);
 
 		if (this.walls[0])
-			line(x1, y1, x2, y1);  // top
+			line(x1, y1, x2, y1); // top
 		if (this.walls[1])
-			line(x2, y1, x2, y2);  // right
+			line(x2, y1, x2, y2); // right
 		if (this.walls[2])
-			line(x2, y2, x1, y2);  // bottom
+			line(x2, y2, x1, y2); // bottom
 		if (this.walls[3])
-			line(x1, y2, x1, y1);  // left
+			line(x1, y2, x1, y1); // left
 
 		if (!done) {
 			if (this === current) {
@@ -44,23 +46,22 @@ function Cell(r, c)
 		}
 	}
 
-	this.next = function()
-	{
-		var free = [];
-		var c, n;
+	next() {
 
-		if (c = cell(this.row - 1, this.col))  // up
-			if (!c.visited)
-				free.push(c);
-		if (c = cell(this.row, this.col + 1))  // right
-			if (!c.visited)
-				free.push(c);
-		if (c = cell(this.row + 1, this.col))  // down
-			if (!c.visited)
-				free.push(c);
-		if (c = cell(this.row, this.col - 1))  // left
-			if (!c.visited)
-				free.push(c);
+		var free = [];
+		var n;
+
+		function checkfree(a, dx, dy) {
+			var c;
+			if (c = cell(a.row + dy, a.col + dx))
+				if (!c.visited)
+					free.push(c);
+		}
+
+		checkfree(this, 0, -1);  // top
+		checkfree(this, 1,  0);  // right
+		checkfree(this, 0,  1);  // bottom
+		checkfree(this, -1, 0);  // left
 
 		if (free.length == 0) {
 			this.todo = 0;
@@ -68,34 +69,34 @@ function Cell(r, c)
 		}
 
 		this.todo = free.length - 1;
-	
+
 		if (free.length == 1)
 			n = free[0];
 		else {
 			n = free[floor(random(free.length))];
 			stack.push(this);
 		}
-		
-		var hori = n.col - this.col;
-		var vert = n.row - this.row;
-		
-		if (vert == -1) {  // up
+
+		var hor = n.col - this.col;
+		var ver = n.row - this.row;
+
+		if (ver == -1) {          // top
 			this.walls[0] = false;
 			n.walls[2] = false;
 		}
-		else if (hori == 1) {  // right
+		else if (hor == 1) {      // right
 			this.walls[1] = false;
 			n.walls[3] = false;
 		}
-		else if (vert == 1) {  // down
+		else if (ver == 1) {      // bottom
 			this.walls[2] = false;
 			n.walls[0] = false;
 		}
-		else {  // left
+		else {                     // left
 			this.walls[3] = false;
 			n.walls[1] = false;
 		}
-		
+
 		return n;
 	}
 }
